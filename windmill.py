@@ -36,12 +36,14 @@ def UpdateBestDistanceAndAngle(distance, angle):
 
 def DrawProjectileLauncher():
     draw_outer_circle = plt.Circle((circle.upX, circle.leftY), (circle.leftX - circle.upX), fill=False)
-    draw_inner_circle = plt.Circle((circle.upX, circle.leftY), (circle.leftX - circle.upX) / 10, color='black')#, fill=False)
-    draw_rectangle = plt.Rectangle((circle.upX, circle.leftY), (circle.leftX - circle.upX), (circle.leftX - circle.upX) / 20, color='black')
+    draw_inner_circle = plt.Circle((circle.upX, circle.leftY), (circle.leftX - circle.upX) / 8, color='black')#, fill=False)
+    draw_arm = plt.Rectangle((circle.upX, circle.leftY), (circle.leftX - circle.upX), (circle.leftX - circle.upX) / 16, color='black')
+    draw_body = plt.Rectangle((circle.upX, circle.leftY), (circle.leftX - circle.upX) / 16, -circle.leftY, color='black')
     axes.set_aspect(1)
     axes.add_artist(draw_outer_circle)
     axes.add_artist(draw_inner_circle)
-    axes.add_patch(draw_rectangle)
+    axes.add_patch(draw_arm)
+    axes.add_patch(draw_body)
     return
     
 def DrawPlot():
