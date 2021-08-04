@@ -52,7 +52,6 @@ def DrawPlot():
     plt.ylabel('Height(ft)')
     plt.xlabel('Distance(ft)')
     plt.title('Launch Trajectories')
-    figure.savefig("windmill.png")
     plt.show() 
     return
 
