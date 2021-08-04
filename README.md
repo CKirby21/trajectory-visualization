@@ -1,6 +1,6 @@
 # trajectory-visualization
 
-Python program that takes calculates trajectories based on launch angle and launch height
+Python program that takes calculates trajectories based on launch angle, height, and speed
 
 Matplotlib is used to display the trajectories
 
