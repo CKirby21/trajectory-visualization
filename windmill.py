@@ -2,10 +2,10 @@ import math
 import matplotlib.pyplot as plt
 
 # Make my own ranges, functions, and classes
-def decimal_range(start, stop, decrement):
+def decimal_range(start, stop, change):
     while start >= stop:
         yield start
-        start -= decrement
+        start += change
 
 class MyCircle:
     upX, upY, leftX, leftY = [0,0,0,0]
@@ -35,12 +35,12 @@ def UpdateBestDistanceAndAngle(distance, angle):
     return
 
 def DrawProjectileLauncher():
-    draw_outer_circle = plt.Circle((circle.upX, circle.leftY), (circle.leftX - circle.upX), fill=False)
+    #draw_outer_circle = plt.Circle((circle.upX, circle.leftY), (circle.leftX - circle.upX), fill=False)
     draw_inner_circle = plt.Circle((circle.upX, circle.leftY), (circle.leftX - circle.upX) / 8, color='black')#, fill=False)
-    draw_arm = plt.Rectangle((circle.upX, circle.leftY), (circle.leftX - circle.upX), (circle.leftX - circle.upX) / 16, color='black')
-    draw_body = plt.Rectangle((circle.upX, circle.leftY), (circle.leftX - circle.upX) / 16, -circle.leftY, color='black')
+    draw_arm = plt.Rectangle((circle.upX, circle.leftY), (circle.leftX - circle.upX), (circle.leftX - circle.upX) / 15, color='black')
+    draw_body = plt.Rectangle((circle.upX, circle.leftY), (circle.leftX - circle.upX) / 10, -circle.leftY, color='black')
     axes.set_aspect(1)
-    axes.add_artist(draw_outer_circle)
+    #axes.add_artist(draw_outer_circle)
     axes.add_artist(draw_inner_circle)
     axes.add_patch(draw_arm)
     axes.add_patch(draw_body)
@@ -51,8 +51,8 @@ def DrawPlot():
     plt.gca().spines['right'].set_visible(False)
     plt.annotate("Best Distance: {2:.2f} at {0}{1}\nBest Height :{4:.2f} at {3}{1}".format(annotation.bestDistanceAngle, degree_sign, annotation.bestDistance, annotation.bestHeightAngle, annotation.bestHeight), 
                     xy=(annotation.bestDistance, annotation.bestHeight), ha='right', va='top')
-    plt.ylabel('Height(ft)')
-    plt.xlabel('Distance(ft)')
+    plt.ylabel('Height (ft)')
+    plt.xlabel('Distance (ft)')
     plt.title('Launch Trajectories')
     plt.show() 
     return
@@ -64,7 +64,7 @@ def MetersToFeet(measurementInMeters):
     return measurementInMeters * 3.2808399
 
 def PlotData(velocityInitial, bodyHeight, armLength):
-    for angle in decimal_range(90, 0, 1):
+    for angle in decimal_range(90, 0, -1):
 
         yVelocityInitial = math.sin(angle * (math.pi / 180)) * velocityInitial
         xVelocity = math.cos(angle * (math.pi / 180)) * velocityInitial
@@ -92,7 +92,8 @@ def PlotData(velocityInitial, bodyHeight, armLength):
             UpdateBestHeightAndAngle(heightFT, angle)
 
         UpdateBestDistanceAndAngle(distanceFT, angle)
-        plt.plot(distances, heights)
+        if angle % 12 == 0:
+            plt.plot(distances, heights)
 
 # Initialize global variables
 circle = MyCircle()
@@ -102,7 +103,7 @@ figure, axes = plt.subplots()
 
 # Read in user input
 velocityInitialString = input("Enter velocity of arm (mph):")
-bodyHeightString = input("Enter height of body up to the arm (ft):")
+bodyHeightString = input("Enter height of body (ft):")
 armHeightString = input("Enter length of arm (ft):")
 
 # Convert from US to Metric
