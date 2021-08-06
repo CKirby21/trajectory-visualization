@@ -1,6 +1,6 @@
 # trajectory-visualization
 
-My Brother and I were wondering how far you would get launched if you were strapped to the arm of a windmill 🙂
+My Brother and I were wondering how far you would get launched if you were strapped to the arm of a windmill 🤔
 
 So naturally I decided to make a python program that calculates trajectories based on launch angle, height, and speed 
 
