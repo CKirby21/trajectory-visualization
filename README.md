@@ -8,7 +8,7 @@ The result is a graph that tells you the optimal launch angles to maximize heigh
 
 The program should work for any body-arm system (like a quarterback throwing a pass)
 
-Clone repository and run windmill.exe in the dist folder to try it out!
+Clone repository or download .exe file in the dist folder to try it out!
 ----------------------------------------------------------------------------------------------------------------
 ![original](https://user-images.githubusercontent.com/88149251/128522864-97f7ed21-75ea-4334-b7c9-64d07b43d21b.png)
 
