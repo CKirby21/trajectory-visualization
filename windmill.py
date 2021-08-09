@@ -104,7 +104,10 @@ figure, axes = plt.subplots()
 # Read in user input
 velocityInitialString = input("Enter velocity of arm (mph):")
 bodyHeightString = input("Enter height of body (ft):")
-armHeightString = input("Enter length of arm (ft):")
+armHeightString = bodyHeightString
+while float(armHeightString) >= float(bodyHeightString): 
+    armHeightString = input("Enter length of arm (ft):")
+
 
 # Convert from US to Metric
 velocityInitial = float(velocityInitialString) / 2.23693629
