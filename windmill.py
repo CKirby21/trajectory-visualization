@@ -12,6 +12,10 @@ class MyCircle:
 
 class MyAnnotation:
     bestDistance, bestDistanceAngle, bestHeightAngle, bestHeight = [0,0,0,0]
+    distancesForBestDistance = []
+    distancesForBestHeight = []
+    heightsForBestDistance = []
+    heightsForBestHeight = []
 
 def UpdateCircleLocation(angle, time, distance, height):
     if angle == 0 and time == 0:
@@ -20,19 +24,20 @@ def UpdateCircleLocation(angle, time, distance, height):
     if angle == 90 and time == 0:
         circle.leftX = MetersToFeet(distance)
         circle.leftY = MetersToFeet(height)
-    return
 
-def UpdateBestHeightAndAngle(height, angle):
+def UpdateBestHeightInfo(height, angle, distances, heights):
     if height > annotation.bestHeight:
-                annotation.bestHeight = height
-                annotation.bestHeightAngle = angle
-    return
+            annotation.bestHeight = height
+            annotation.bestHeightAngle = angle
+            annotation.distancesForBestHeight = distances
+            annotation.heightsForBestHeight = heights
 
-def UpdateBestDistanceAndAngle(distance, angle):
+def UpdateBestDistanceInfo(distance, angle, distances, heights):
     if distance > annotation.bestDistance:
         annotation.bestDistance = distance
         annotation.bestDistanceAngle = angle
-    return
+        annotation.distancesForBestDistance = distances
+        annotation.heightsForBestDistance = heights
 
 def DrawProjectileLauncher():
     #draw_outer_circle = plt.Circle((circle.upX, circle.leftY), (circle.leftX - circle.upX), fill=False)
@@ -49,8 +54,9 @@ def DrawProjectileLauncher():
 def DrawPlot():
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
-    plt.annotate("Best Distance: {2:.2f} at {0}{1}\nBest Height :{4:.2f} at {3}{1}".format(annotation.bestDistanceAngle, degree_sign, annotation.bestDistance, annotation.bestHeightAngle, annotation.bestHeight), 
-                    xy=(annotation.bestDistance, annotation.bestHeight), ha='right', va='top')
+    plt.annotate("Best Distance: {2:.2f} at {0}{1}\nBest Height :{4:.2f} at {3}{1}".format(
+                    annotation.bestDistanceAngle, degree_sign, annotation.bestDistance, 
+                    annotation.bestHeightAngle, annotation.bestHeight), xy=(annotation.bestDistance, annotation.bestHeight), ha='right', va='top')
     plt.ylabel('Height (ft)')
     plt.xlabel('Distance (ft)')
     plt.title('Launch Trajectories')
@@ -80,6 +86,7 @@ def PlotData(velocityInitial, bodyHeight, armLength):
         height = bodyHeight + heightFromBodyToArm
         distance = -distanceFromBodyToArm
         time = 0
+        bestHeight = 0
         UpdateCircleLocation(angle, time, distance, height)
         while height >= 0:
             heightFT = MetersToFeet(height)
@@ -89,11 +96,16 @@ def PlotData(velocityInitial, bodyHeight, armLength):
             height = (yVelocityInitial * time) + (.5 * -9.81 * (time * time)) + bodyHeight + heightFromBodyToArm
             distance = (xVelocity * time) - distanceFromBodyToArm
             time += (timeTotal / 1000)
-            UpdateBestHeightAndAngle(heightFT, angle)
+            if heightFT > bestHeight:
+                bestHeight = heightFT
+        
+        UpdateBestHeightInfo(bestHeight, angle, distances, heights)
+        UpdateBestDistanceInfo(distanceFT, angle, distances, heights)
+        # if angle % 12 == 0:
+        #     plt.plot(distances, heights)
+    plt.plot(annotation.distancesForBestDistance, annotation.heightsForBestDistance)
+    plt.plot(annotation.distancesForBestHeight, annotation.heightsForBestHeight)
 
-        UpdateBestDistanceAndAngle(distanceFT, angle)
-        if angle % 12 == 0:
-            plt.plot(distances, heights)
 
 # Initialize global variables
 circle = MyCircle()
