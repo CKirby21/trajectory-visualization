@@ -47,6 +47,6 @@ for angle in decimal_range(75, 15, 15):
     axis[0].plot(times, heights)
     axis[1].plot(distances, heights, label="{0}{1}".format(angle, degree_sign))
 
-figure.savefig("traj.png")
+#figure.savefig("traj.png")
 axis[1].legend(loc ="upper right")
 plt.show() 
