@@ -107,28 +107,34 @@ def PlotData(velocityInitial, bodyHeight, armLength):
     plt.plot(trajectories_info.distancesForBestDistance, trajectories_info.heightsForBestDistance)
     plt.plot(trajectories_info.distancesForBestHeight, trajectories_info.heightsForBestHeight)
 
+# Initialize global variables
+circle = MyCircle()
+trajectories_info = TrajectoriesInfo()
+degree_sign = u'\N{DEGREE SIGN}'
+figure, axes = plt.subplots()
 
-
-if __name__ == '__main__':
-    
-    # Initialize global variables
-    circle = MyCircle()
-    trajectories_info = TrajectoriesInfo()
-    degree_sign = u'\N{DEGREE SIGN}'
-    figure, axes = plt.subplots()
-
-    # Read in user input
-    velocityInitialString = input("Enter velocity of arm (mph):")
-    bodyHeightString = input("Enter height of body (ft):")
-    armHeightString = bodyHeightString
-    while float(armHeightString) >= float(bodyHeightString): 
-        armHeightString = input("Enter length of arm (ft):")
+def Main(bodyHeight:float, armLength:float, armVelocity:float):
 
     # Convert from US to Metric
-    velocityInitial = float(velocityInitialString) / 2.23693629
-    bodyHeight = FeetToMeters(float(bodyHeightString))
-    armLength = FeetToMeters(float(armHeightString))
+    armVelocity = armVelocity / 2.23693629
+    bodyHeight = FeetToMeters(bodyHeight)
+    armLength = FeetToMeters(armLength)
 
-    PlotData(velocityInitial, bodyHeight, armLength)
+    PlotData(armVelocity, bodyHeight, armLength)
     DrawProjectileLauncher()
     DrawPlot()
+
+if __name__ == '__main__':
+
+    # Read in user input
+    armVelocityString = input("Enter velocity of arm (mph):")
+    bodyHeightString = input("Enter height of body (ft):")
+    armLengthString = bodyHeightString
+    while float(armLengthString) >= float(bodyHeightString): 
+        armLengthString = input("Enter length of arm (ft):")
+
+    armVelocity = float(armVelocityString)
+    bodyHeight = float(bodyHeightString)
+    armLength = float(armLengthString)
+
+    Main(armVelocity, bodyHeight, armLength)
