@@ -8,36 +8,38 @@ def decimal_range(start, stop, change):
         start += change
 
 class MyCircle:
-    upX, upY, leftX, leftY = [0,0,0,0]
+    def __init__(self):
+        self.upX, self.upY, self.leftX, self.leftY = [0,0,0,0]
+
+    def UpdateCoordinates(self, angle, distance, height):
+        if angle == 0:
+            self.upX = MetersToFeet(distance)
+            self.upY = MetersToFeet(height)
+        if angle == 90:
+            self.leftX = MetersToFeet(distance)
+            self.leftY = MetersToFeet(height)
 
 class TrajectoriesInfo:
-    bestDistance, bestDistanceAngle, bestHeightAngle, bestHeight = [0,0,0,0]
-    distancesForBestDistance = []
-    distancesForBestHeight = []
-    heightsForBestDistance = []
-    heightsForBestHeight = []
+    def __init__(self):
+        self.bestDistance, self.bestDistanceAngle, self.bestHeightAngle, self.bestHeight = [0,0,0,0]
+        self.distancesForBestDistance = []
+        self.distancesForBestHeight = []
+        self.heightsForBestDistance = []
+        self.heightsForBestHeight = []
+    
+    def UpdateHeight(self, height, angle, distances, heights):
+        if height > self.bestHeight:
+            self.bestHeight = height
+            self.bestHeightAngle = angle
+            self.distancesForBestHeight = distances
+            self.heightsForBestHeight = heights
 
-def UpdateCircleLocation(angle, distance, height):
-    if angle == 0:
-        circle.upX = MetersToFeet(distance)
-        circle.upY = MetersToFeet(height)
-    if angle == 90:
-        circle.leftX = MetersToFeet(distance)
-        circle.leftY = MetersToFeet(height)
-
-def UpdateBestHeightInfo(height, angle, distances, heights):
-    if height > trajectories_info.bestHeight:
-        trajectories_info.bestHeight = height
-        trajectories_info.bestHeightAngle = angle
-        trajectories_info.distancesForBestHeight = distances
-        trajectories_info.heightsForBestHeight = heights
-
-def UpdateBestDistanceInfo(distance, angle, distances, heights):
-    if distance > trajectories_info.bestDistance:
-        trajectories_info.bestDistance = distance
-        trajectories_info.bestDistanceAngle = angle
-        trajectories_info.distancesForBestDistance = distances
-        trajectories_info.heightsForBestDistance = heights
+    def UpdateDistance(self, distance, angle, distances, heights):
+        if distance > trajectories_info.bestDistance:
+            self.bestDistance = distance
+            self.bestDistanceAngle = angle
+            self.distancesForBestDistance = distances
+            self.heightsForBestDistance = heights
 
 def DrawProjectileLauncher():
     draw_inner_circle = plt.Circle((circle.upX, circle.leftY), (circle.leftX - circle.upX) / 8, color='black')
@@ -75,7 +77,7 @@ def CalculateTrajectoryFromConditions(bodyHeight, angle, yVelocityInitial, xVelo
     distance = -distanceFromBodyToArm
     currentTime = 0
     bestHeight = 0
-    UpdateCircleLocation(angle, distance, height)
+    circle.UpdateCoordinates(angle, distance, height)
     while height >= 0:
         heightFT = MetersToFeet(height)
         distanceFT = MetersToFeet(distance)
@@ -88,11 +90,11 @@ def CalculateTrajectoryFromConditions(bodyHeight, angle, yVelocityInitial, xVelo
         if heightFT > bestHeight:
             bestHeight = heightFT
         
-    UpdateBestHeightInfo(bestHeight, angle, distances, heights)
-    UpdateBestDistanceInfo(distanceFT, angle, distances, heights)
+    trajectories_info.UpdateHeight(bestHeight, angle, distances, heights)
+    trajectories_info.UpdateDistance(distanceFT, angle, distances, heights)
 
 def PlotData(velocityInitial, bodyHeight, armLength):
-    for angle in decimal_range(90, 0, -.1):
+    for angle in decimal_range(90, 45, -.1):
 
         yVelocityInitial = math.sin(angle * (math.pi / 180)) * velocityInitial
         xVelocity = math.cos(angle * (math.pi / 180)) * velocityInitial
@@ -108,6 +110,7 @@ def PlotData(velocityInitial, bodyHeight, armLength):
     plt.plot(trajectories_info.distancesForBestHeight, trajectories_info.heightsForBestHeight)
 
 # Initialize global variables
+
 circle = MyCircle()
 trajectories_info = TrajectoriesInfo()
 degree_sign = u'\N{DEGREE SIGN}'
