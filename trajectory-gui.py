@@ -101,7 +101,7 @@ if __name__ == '__main__':
     lbl = Label(subframe, text="Velocity of Arm (mph):", font = FONT)
     lbl.pack(side='left')
     entArmVelocity = Entry(subframe)
-    entArmVelocity.insert(0, '180')
+    entArmVelocity.insert(0, '161')
     entArmVelocity.pack(side='left')
 
     btn = Button(frame, text="Plot", font = FONT, command=lambda: click(entBodyHeight,entArmLength,entArmVelocity))

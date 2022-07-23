@@ -8,16 +8,11 @@ def decimal_range(start, stop, change):
         start += change
 
 class MyCircle:
-    def __init__(self):
-        self.upX, self.upY, self.leftX, self.leftY = [0,0,0,0]
-
-    def UpdateCoordinates(self, angle, distance, height):
-        if angle == 0:
-            self.upX = MetersToFeet(distance)
-            self.upY = MetersToFeet(height)
-        if angle == 90:
-            self.leftX = MetersToFeet(distance)
-            self.leftY = MetersToFeet(height)
+    def __init__(self, bodyHeight, armLength):
+        self.upX = 0
+        self.upY = bodyHeight + armLength
+        self.leftX = -armLength
+        self.leftY = bodyHeight
 
 class TrajectoriesInfo:
     def __init__(self):
@@ -27,21 +22,21 @@ class TrajectoriesInfo:
         self.heightsForBestDistance = []
         self.heightsForBestHeight = []
     
-    def UpdateHeight(self, height, angle, distances, heights):
+    def Update(self, distance, height, angle, distances, heights):
         if height > self.bestHeight:
             self.bestHeight = height
             self.bestHeightAngle = angle
             self.distancesForBestHeight = distances
             self.heightsForBestHeight = heights
 
-    def UpdateDistance(self, distance, angle, distances, heights):
         if distance > trajectories_info.bestDistance:
             self.bestDistance = distance
             self.bestDistanceAngle = angle
             self.distancesForBestDistance = distances
             self.heightsForBestDistance = heights
 
-def DrawProjectileLauncher():
+def DrawProjectileLauncher(bodyHeight, armLength, axes):
+    circle = MyCircle(bodyHeight, armLength)
     draw_inner_circle = plt.Circle((circle.upX, circle.leftY), (circle.leftX - circle.upX) / 8, color='black')
     draw_arm = plt.Rectangle((circle.upX, circle.leftY), (circle.leftX - circle.upX), (circle.leftX - circle.upX) / 15, color='black')
     draw_body = plt.Rectangle((circle.upX, circle.leftY), (circle.leftX - circle.upX) / 10, -circle.leftY, color='black')
@@ -52,6 +47,7 @@ def DrawProjectileLauncher():
     return
     
 def DrawPlot():
+    degree_sign = u'\N{DEGREE SIGN}'
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     plt.annotate("Best Distance: {2:.1f} ft at {0:.1f}{1}\nBest Height: {4:.1f} ft at {3:.1f}{1}".format(
@@ -77,7 +73,6 @@ def CalculateTrajectoryFromConditions(bodyHeight, angle, yVelocityInitial, xVelo
     distance = -distanceFromBodyToArm
     currentTime = 0
     bestHeight = 0
-    circle.UpdateCoordinates(angle, distance, height)
     while height >= 0:
         heightFT = MetersToFeet(height)
         distanceFT = MetersToFeet(distance)
@@ -85,16 +80,15 @@ def CalculateTrajectoryFromConditions(bodyHeight, angle, yVelocityInitial, xVelo
         distances.append(distanceFT)
         height = (yVelocityInitial * currentTime) + (.5 * -9.81 * (currentTime * currentTime)) + bodyHeight + heightFromBodyToArm
         distance = (xVelocity * currentTime) - distanceFromBodyToArm
-        # Makes so there is 1000 data points for each trajectory
-        currentTime += (timeTotal / 1000)
         if heightFT > bestHeight:
             bestHeight = heightFT
+        # Makes so there is 1000 data points for each trajectory
+        currentTime += (timeTotal / 1000)
         
-    trajectories_info.UpdateHeight(bestHeight, angle, distances, heights)
-    trajectories_info.UpdateDistance(distanceFT, angle, distances, heights)
+    trajectories_info.Update(distanceFT, bestHeight, angle, distances, heights)
 
 def PlotData(velocityInitial, bodyHeight, armLength):
-    for angle in decimal_range(90, 45, -.1):
+    for angle in decimal_range(90, 0, -.1):
 
         yVelocityInitial = math.sin(angle * (math.pi / 180)) * velocityInitial
         xVelocity = math.cos(angle * (math.pi / 180)) * velocityInitial
@@ -109,22 +103,18 @@ def PlotData(velocityInitial, bodyHeight, armLength):
     plt.plot(trajectories_info.distancesForBestDistance, trajectories_info.heightsForBestDistance)
     plt.plot(trajectories_info.distancesForBestHeight, trajectories_info.heightsForBestHeight)
 
-# Initialize global variables
-
-circle = MyCircle()
-trajectories_info = TrajectoriesInfo()
-degree_sign = u'\N{DEGREE SIGN}'
-figure, axes = plt.subplots()
-
-def Main(bodyHeight:float, armLength:float, armVelocity:float):
+def Main(bodyHeightFT:float, armLengthFT:float, armVelocityFT:float):
 
     # Convert from US to Metric
-    armVelocity = armVelocity / 2.23693629
-    bodyHeight = FeetToMeters(bodyHeight)
-    armLength = FeetToMeters(armLength)
+    armVelocity = armVelocityFT / 2.23693629
+    bodyHeight = FeetToMeters(bodyHeightFT)
+    armLength = FeetToMeters(armLengthFT)
 
+    global trajectories_info
+    trajectories_info = TrajectoriesInfo()
+    figure, axes = plt.subplots()
     PlotData(armVelocity, bodyHeight, armLength)
-    DrawProjectileLauncher()
+    DrawProjectileLauncher(bodyHeightFT, armLengthFT, axes)
     DrawPlot()
 
 if __name__ == '__main__':
