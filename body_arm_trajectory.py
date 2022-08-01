@@ -7,13 +7,6 @@ def decimal_range(start, stop, change):
         yield start
         start += change
 
-class MyCircle:
-    def __init__(self, bodyHeight, armLength):
-        self.upX = 0
-        self.upY = bodyHeight + armLength
-        self.leftX = -armLength
-        self.leftY = bodyHeight
-
 class TrajectoriesInfo:
     def __init__(self):
         self.bestDistance, self.bestDistanceAngle, self.bestHeightAngle, self.bestHeight = [0,0,0,0]
@@ -36,10 +29,13 @@ class TrajectoriesInfo:
             self.heightsForBestDistance = heights
 
 def DrawProjectileLauncher(bodyHeight, armLength, axes):
-    circle = MyCircle(bodyHeight, armLength)
-    draw_inner_circle = plt.Circle((circle.upX, circle.leftY), (circle.leftX - circle.upX) / 8, color='black')
-    draw_arm = plt.Rectangle((circle.upX, circle.leftY), (circle.leftX - circle.upX), (circle.leftX - circle.upX) / 15, color='black')
-    draw_body = plt.Rectangle((circle.upX, circle.leftY), (circle.leftX - circle.upX) / 10, -circle.leftY, color='black')
+    upX = 0
+    upY = bodyHeight + armLength
+    leftX = -armLength
+    leftY = bodyHeight
+    draw_inner_circle = plt.Circle((upX, leftY), (leftX - upX) / 8, color='black')
+    draw_arm = plt.Rectangle((upX, leftY), (leftX - upX), (leftX - upX) / 15, color='black')
+    draw_body = plt.Rectangle((upX, leftY), (leftX - upX) / 10, -leftY, color='black')
     axes.set_aspect(1)
     axes.add_artist(draw_inner_circle)
     axes.add_patch(draw_arm)
