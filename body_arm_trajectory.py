@@ -1,6 +1,8 @@
 import math
 import matplotlib.pyplot as plt
 
+GRAVITY = -9.80665
+
 # Make my own ranges, functions, and classes
 def decimal_range(start, stop, change):
     while start >= stop:
@@ -29,13 +31,9 @@ class TrajectoriesInfo:
             self.heightsForBestDistance = heights
 
 def DrawProjectileLauncher(bodyHeight, armLength, axes):
-    upX = 0
-    upY = bodyHeight + armLength
-    leftX = -armLength
-    leftY = bodyHeight
-    draw_inner_circle = plt.Circle((upX, leftY), (leftX - upX) / 8, color='black')
-    draw_arm = plt.Rectangle((upX, leftY), (leftX - upX), (leftX - upX) / 15, color='black')
-    draw_body = plt.Rectangle((upX, leftY), (leftX - upX) / 10, -leftY, color='black')
+    draw_inner_circle = plt.Circle((0, bodyHeight), -armLength / 8, color='black')
+    draw_arm = plt.Rectangle((0, bodyHeight), -armLength, -armLength / 15, color='black')
+    draw_body = plt.Rectangle((0, bodyHeight), -armLength / 10, -bodyHeight, color='black')
     axes.set_aspect(1)
     axes.add_artist(draw_inner_circle)
     axes.add_patch(draw_arm)
@@ -43,11 +41,11 @@ def DrawProjectileLauncher(bodyHeight, armLength, axes):
     return
     
 def DrawPlot():
-    degree_sign = u'\N{DEGREE SIGN}'
+    DEGREE_SIGN = u'\N{DEGREE SIGN}'
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     plt.annotate("Best Distance: {2:.1f} ft at {0:.1f}{1}\nBest Height: {4:.1f} ft at {3:.1f}{1}".format(
-                    trajectories_info.bestDistanceAngle, degree_sign, 
+                    trajectories_info.bestDistanceAngle, DEGREE_SIGN, 
                     trajectories_info.bestDistance, 
                     trajectories_info.bestHeightAngle, trajectories_info.bestHeight), 
                     xy=(trajectories_info.bestDistance,trajectories_info.bestHeight), ha='right', va='top')
@@ -65,44 +63,45 @@ def MetersToFeet(measurementInMeters):
 
 def CalculateTrajectoryFromConditions(bodyHeight, angle, yVelocityInitial, xVelocity, timeTotal, heightFromBodyToArm, distanceFromBodyToArm):
     heights, distances = ([],[])
-    height = bodyHeight + heightFromBodyToArm
-    distance = -distanceFromBodyToArm
+    currentHeight = bodyHeight + heightFromBodyToArm
+    currentDistance = -distanceFromBodyToArm
     currentTime = 0
     bestHeight = 0
-    while height >= 0:
-        heightFT = MetersToFeet(height)
-        distanceFT = MetersToFeet(distance)
+    increment = timeTotal / 1000
+    while currentHeight >= 0:
+        heightFT = MetersToFeet(currentHeight)
+        distanceFT = MetersToFeet(currentDistance)
         heights.append(heightFT)
         distances.append(distanceFT)
-        height = (yVelocityInitial * currentTime) + (.5 * -9.81 * (currentTime * currentTime)) + bodyHeight + heightFromBodyToArm
-        distance = (xVelocity * currentTime) - distanceFromBodyToArm
+        currentHeight = (yVelocityInitial * currentTime) + (.5 * GRAVITY * (currentTime**2)) + bodyHeight + heightFromBodyToArm
+        currentDistance = (xVelocity * currentTime) - distanceFromBodyToArm
         if heightFT > bestHeight:
             bestHeight = heightFT
         # Makes so there is 1000 data points for each trajectory
-        currentTime += (timeTotal / 1000)
+        currentTime += increment
         
     trajectories_info.Update(distanceFT, bestHeight, angle, distances, heights)
 
 def PlotData(velocityInitial, bodyHeight, armLength):
     for angle in decimal_range(90, 0, -.1):
-
-        yVelocityInitial = math.sin(angle * (math.pi / 180)) * velocityInitial
-        xVelocity = math.cos(angle * (math.pi / 180)) * velocityInitial
-        timeToReachApex = yVelocityInitial / 9.81
-        distanceFromStartToApex = (yVelocityInitial * timeToReachApex) + (.5 * -9.81 * (timeToReachApex * timeToReachApex))
-        timeFromApexToGround = math.sqrt((distanceFromStartToApex + bodyHeight) / (.5 * 9.81))
+        radians = math.radians(angle)
+        yVelocityInitial = math.sin(radians) * velocityInitial
+        xVelocity = math.cos(radians) * velocityInitial
+        timeToReachApex = yVelocityInitial / -GRAVITY
+        distanceFromStartToApex = (yVelocityInitial * timeToReachApex) + (.5 * GRAVITY * (timeToReachApex**2))
+        timeFromApexToGround = math.sqrt((distanceFromStartToApex + bodyHeight) / (.5 * -GRAVITY))
         timeTotal = timeToReachApex + timeFromApexToGround
-        heightFromBodyToArm = math.cos(angle * (math.pi / 180)) * armLength
-        distanceFromBodyToArm = math.sin(angle * (math.pi / 180)) * armLength
+        heightFromBodyToArm = math.cos(radians) * armLength
+        distanceFromBodyToArm = math.sin(radians) * armLength
         CalculateTrajectoryFromConditions(bodyHeight, angle, yVelocityInitial, xVelocity, timeTotal, heightFromBodyToArm, distanceFromBodyToArm)
         
     plt.plot(trajectories_info.distancesForBestDistance, trajectories_info.heightsForBestDistance)
     plt.plot(trajectories_info.distancesForBestHeight, trajectories_info.heightsForBestHeight)
 
-def Main(bodyHeightFT:float, armLengthFT:float, armVelocityFT:float):
+def Main(bodyHeightFT:float, armLengthFT:float, armVelocityMPH:float):
 
     # Convert from US to Metric
-    armVelocity = armVelocityFT / 2.23693629
+    armVelocity = armVelocityMPH / 2.23693629
     bodyHeight = FeetToMeters(bodyHeightFT)
     armLength = FeetToMeters(armLengthFT)
 
