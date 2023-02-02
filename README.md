@@ -8,12 +8,9 @@ The result is a graph that tells you the optimal launch angles to maximize heigh
 
 The program should work for any body-arm system (like a quarterback throwing a pass)
 
-Clone repository or download .exe file in the dist folder to try it out!
 ----------------------------------------------------------------------------------------------------------------
-![original](https://user-images.githubusercontent.com/88149251/128522864-97f7ed21-75ea-4334-b7c9-64d07b43d21b.png)
+![image](https://user-images.githubusercontent.com/88149251/216210148-1ea30e5d-3b20-4947-921b-036aca2a1978.png)
 
-![lowspeed](https://user-images.githubusercontent.com/88149251/128522874-7dfb81cb-bf30-4dd7-a9cf-fcbcdec8c6c7.png)
+![image](https://user-images.githubusercontent.com/88149251/216210035-c30d35b3-d3b5-499a-a5ca-721c9535b06d.png)
 
-![highspeed](https://user-images.githubusercontent.com/88149251/128522885-949369ae-75f7-4f11-83e6-e50e717ba633.png)
-
-[DO NOT TRY AT HOME haha]
+Disclaimer: DO NOT TRY AT HOME
